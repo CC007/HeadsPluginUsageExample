@@ -1,0 +1,16 @@
+name: HeadsPlacer
+version: 1.0
+main: com.github.cc007.headsplacer.HeadsRowPlacer
+author: Rik Schaaf aka CC007 <http://coolcat007.nl/>
+description: >
+             Spawn in heads as block
+
+commands:
+    customheads:
+        description: "Open a menu or type a name"
+        aliases: [chds, hds, head, heads, chead, cheads]
+permissions:
+    heads.place:
+        description: Allows the user to place heads
+    heads.update:
+        description: Allows the user to update the heads
