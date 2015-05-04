@@ -80,7 +80,7 @@ public class HeadsPlacerCommand implements CommandExecutor {
 
             sender.sendMessage(ChatColor.GREEN + "Placing heads and filling inventory...");
             if (args.length == 0) {
-                List<ItemStack> heads = HeadCreator.getItemStacks(plugin.getHeadsUtils().getHeads());
+                List<ItemStack> heads = HeadCreator.getItemStacks(plugin.getHeadsUtils().getAllCategoryHeads());
                 for (int i = 0; i < heads.size(); i++) {
                     ItemStack head = heads.get(i);
                     player.getInventory().addItem(head);
@@ -103,7 +103,7 @@ public class HeadsPlacerCommand implements CommandExecutor {
                         }
                     }
                     if (flag) {
-                        List<ItemStack> heads = HeadCreator.getItemStacks(plugin.getHeadsUtils().getHeads(args[0]));
+                        List<ItemStack> heads = HeadCreator.getItemStacks(plugin.getHeadsUtils().getCategoryHeads(args[0]));
                         for (int i = 0; i < heads.size(); i++) {
                             ItemStack head = heads.get(i);
                             player.getInventory().addItem(head);

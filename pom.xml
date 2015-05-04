@@ -10,6 +10,28 @@
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
     </properties>
+    
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    
+    <developers>
+        <developer>
+            <id>cc007</id>
+            <name>Coolcat007</name>
+            <url>coolcat007.nl</url>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+            <timezone>Europe/Amsterdam</timezone>
+        </developer>
+    </developers>
+    
     <repositories>
         <!-- local libs repositories -->
         <repository>
@@ -40,10 +62,55 @@
         </repository>   
     </repositories>
     <dependencies>
+        <!-- Spigot API -->
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot</artifactId>
+            <version>1.8-R0.1-20150429.234816-2</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.code.gson</groupId>
+                    <artifactId>gson</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- Bukkit API -->
+        <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>bukkit</artifactId>
+            <version>1.8-R0.1-20150429.234927-1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- Craftbukkit API -->
+        <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>craftbukkit</artifactId>
+            <version>1.8-R0.1-20150429.234833-1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.code.gson</groupId>
+                    <artifactId>gson</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.sf.jopt-simple</groupId>
+                    <artifactId>jopt-simple</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- HeadsPlugin API -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>HeadsPlugin</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
         </dependency>
         
         <!-- Vault permission, chat and groups -->
@@ -117,7 +184,30 @@
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
-                        </goals>
+                        </goals><configuration>
+                            <minimizeJar>true</minimizeJar>
+                            <artifactSet>
+                                <excludes>
+                                    <exclude>org.spigotmc:*</exclude>
+                                    <exclude>org.bukkit:*</exclude>
+                                    <exclude>jline:jline</exclude>
+                                    <exclude>org.yaml:snakeyaml</exclude>
+                                    <exclude>com.google.code.gson:gson</exclude>
+                                    <exclude>com.google.guava:guava</exclude>
+                                    <exclude>net.md-5:bungeecord-chat</exclude>
+                                    <exclude>junit:junit</exclude>
+                                    <exclude>net.sf.jopt-simple:jopt-simple</exclude>
+                                    <exclude>org.avaje:ebean</exclude>
+                                    <exclude>commons-lang:commons-lang</exclude>
+                                    <exclude>com.googlecode.json-simple:json-simple</exclude>
+                                    <exclude>org.hamcrest:hamcrest-core</exclude>
+                                    <exclude>org.xerial:sqlite-jdbc</exclude>
+                                    <exclude>javax.persistence:persistence-api</exclude>
+                                    <exclude>mysql:mysql-connector-java</exclude>
+                                    <exclude>net.milkbowl.vault:Vault</exclude>
+                                </excludes>
+                            </artifactSet>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
