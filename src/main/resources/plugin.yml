@@ -14,3 +14,5 @@ permissions:
         description: Allows the user to place heads
     heads.update:
         description: Allows the user to update the heads
+    heads.search:
+        description: Allows the user to search directly for heads

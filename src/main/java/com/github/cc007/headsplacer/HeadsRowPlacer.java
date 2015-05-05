@@ -43,7 +43,7 @@ public class HeadsRowPlacer extends HeadsPlugin {
     private Plugin vault = null;
     private Permission permission = null;
     private HeadsUtils headsUtils;
-    Logger log;
+    private Logger log;
 
     @Override
     public void onEnable() {
@@ -59,7 +59,7 @@ public class HeadsRowPlacer extends HeadsPlugin {
         }
         /* Register commands */
         getCommand("customheads").setExecutor(new HeadsPlacerCommand(this));
-        getCommand("customheads").setTabCompleter(new HeadsPlacerTabCompleter(headsUtils));
+        getCommand("customheads").setTabCompleter(new HeadsPlacerTabCompleter(this));
 
         /* Config stuffs */
         this.getCategoriesConfig().options().copyDefaults(true);

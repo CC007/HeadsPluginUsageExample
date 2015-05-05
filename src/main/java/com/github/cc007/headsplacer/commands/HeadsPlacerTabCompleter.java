@@ -23,12 +23,14 @@
  */
 package com.github.cc007.headsplacer.commands;
 
+import com.github.cc007.headsplacer.HeadsRowPlacer;
 import com.github.cc007.headsutils.HeadsUtils;
 import com.github.cc007.headsutils.heads.Head;
 import com.github.cc007.headsutils.heads.HeadsCategory;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -39,32 +41,38 @@ import org.bukkit.util.StringUtil;
  * @author Autom
  */
 public class HeadsPlacerTabCompleter implements TabCompleter {
-    
-    private final HeadsUtils headsUtils;
-    
-    public HeadsPlacerTabCompleter(HeadsUtils headsUtils) {
-        this.headsUtils = headsUtils;
+
+    private final HeadsRowPlacer plugin;
+
+    public HeadsPlacerTabCompleter(HeadsRowPlacer plugin) {
+        this.plugin = plugin;
     }
-    
+
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         List<String> completions = new ArrayList<>();
-        
+
         if (args.length == 1) {
             String partialCommand = args[0];
             List<String> commands = new ArrayList<>();
-            for (HeadsCategory category : headsUtils.getCategories().getList()) {
-                for (Head head : category.getList()) {
-                    
-                commands.add(head.getName());
-                }
+            for (HeadsCategory category : plugin.getHeadsUtils().getCategories().getList()) {
+                commands.add(category.getCategoryName());
             }
             StringUtil.copyPartialMatches(partialCommand, commands, completions);
         }
-        
+
+        if (args.length == 2) {
+            if (args[0].equalsIgnoreCase("update")) {
+                String partialCommand = args[1];
+                Set<String> commands = plugin.getCategoriesConfig().getConfigurationSection("predefinedcategories").getKeys(false);
+                commands.addAll(plugin.getCategoriesConfig().getConfigurationSection("customcategories").getKeys(false));
+                StringUtil.copyPartialMatches(partialCommand, commands, completions);
+            }
+        }
+
         Collections.sort(completions);
-        
+
         return completions;
     }
-    
+
 }
