@@ -38,6 +38,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.json.JSONException;
 
 /**
  *
@@ -60,7 +61,11 @@ public class HeadsPlacerCommand implements CommandExecutor {
                 sender.sendMessage(ChatColor.GREEN + "Update complete.");
             } else if (plugin.getCategoriesConfig().isInt("predefinedcategories." + args[1]) || plugin.getCategoriesConfig().isInt("customcategories." + args[1] + ".id")) {
                 sender.sendMessage(ChatColor.GREEN + "Updating all category: " + args[1] + "...");
-                plugin.getHeadsUtils().loadCategory(args[1]);
+                try {
+                    plugin.getHeadsUtils().loadCategory(args[1]);
+                } catch (NullPointerException ex) {
+                    sender.sendMessage(ChatColor.RED + "Category is empty!");
+                }
                 sender.sendMessage(ChatColor.GREEN + "Update complete.");
             } else {
                 sender.sendMessage(ChatColor.RED + "No category found with that name, possible categories: ");
@@ -88,12 +93,16 @@ public class HeadsPlacerCommand implements CommandExecutor {
 
                     }
                     sender.sendMessage(ChatColor.GREEN + "Placing heads...");
-                    List<ItemStack> heads = HeadCreator.getItemStacks(plugin.getHeadsUtils().getHeads(String.join(" ", searchArgs)));
-                    for (int i = 0; i < heads.size(); i++) {
-                        ItemStack head = heads.get(i);
-                        placeHeadAndGetInv(head, player, i);
+                    try {
+                        List<ItemStack> heads = HeadCreator.getItemStacks(plugin.getHeadsUtils().getHeads(String.join(" ", searchArgs)));
+                        for (int i = 0; i < heads.size(); i++) {
+                            ItemStack head = heads.get(i);
+                            placeHeadAndGetInv(head, player, i);
+                        }
+                        sender.sendMessage(ChatColor.GREEN + "Heads placed.");
+                    } catch (NullPointerException | JSONException ex) {
+                        sender.sendMessage(ChatColor.RED + "No heads found!");
                     }
-                    sender.sendMessage(ChatColor.GREEN + "Heads placed.");
                 }
                 return true;
             }
@@ -107,9 +116,13 @@ public class HeadsPlacerCommand implements CommandExecutor {
 
                     }
                     sender.sendMessage(ChatColor.GREEN + "Placing head...");
-                    ItemStack head = HeadCreator.getItemStack(plugin.getHeadsUtils().getHead(String.join(" ", searchArgs)));
-                    placeHeadAndGetInv(head, player, 0);
-                    sender.sendMessage(ChatColor.GREEN + "Head placed.");
+                    try {
+                        ItemStack head = HeadCreator.getItemStack(plugin.getHeadsUtils().getHead(String.join(" ", searchArgs)));
+                        placeHeadAndGetInv(head, player, 0);
+                        sender.sendMessage(ChatColor.GREEN + "Head placed.");
+                    } catch (NullPointerException | JSONException ex) {
+                        sender.sendMessage(ChatColor.RED + "No heads found!");
+                    }
                 }
                 return true;
             }
@@ -127,9 +140,13 @@ public class HeadsPlacerCommand implements CommandExecutor {
 
                         }
                         sender.sendMessage(ChatColor.GREEN + "Placing head...");
-                        ItemStack head = HeadCreator.getItemStack(plugin.getHeadsUtils().getHead(String.join(" ", searchArgs), Integer.parseInt(args[1])));
-                        placeHeadAndGetInv(head, player, 0);
-                        sender.sendMessage(ChatColor.GREEN + "Head placed.");
+                        try {
+                            ItemStack head = HeadCreator.getItemStack(plugin.getHeadsUtils().getHead(String.join(" ", searchArgs), Integer.parseInt(args[1])));
+                            placeHeadAndGetInv(head, player, 0);
+                            sender.sendMessage(ChatColor.GREEN + "Head placed.");
+                        } catch (NullPointerException | JSONException ex) {
+                            sender.sendMessage(ChatColor.RED + "No heads found!");
+                        }
                     }
                 } else {
                     sender.sendMessage(ChatColor.RED + "You need to specify an index! Use: /(hds|chds|heads|head|cheads|chead|customheads) (search|searchfirst|searchatindex <index>) <head name>");
