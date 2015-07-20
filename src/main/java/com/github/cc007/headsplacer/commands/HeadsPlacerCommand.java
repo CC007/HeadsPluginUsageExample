@@ -26,7 +26,6 @@ package com.github.cc007.headsplacer.commands;
 import com.github.cc007.headsplacer.HeadsRowPlacer;
 import com.github.cc007.headsplugin.heads.HeadsPlacer;
 import com.github.cc007.headsplugin.heads.HeadCreator;
-import com.github.cc007.headsutils.heads.Head;
 import com.github.cc007.headsutils.heads.HeadsCategory;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,11 +37,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.json.JSONException;
 
 /**
  *
  * @author Autom
+ * @author CC007 (http://coolcat007.nl/)
  */
 public class HeadsPlacerCommand implements CommandExecutor {
 
@@ -52,147 +51,195 @@ public class HeadsPlacerCommand implements CommandExecutor {
         this.plugin = plugin;
     }
 
+    private boolean update(CommandSender sender, String[] args) {
+        if (args.length < 2) {
+            sender.sendMessage(ChatColor.GREEN + "Updating all categories...");
+            plugin.getHeadsUtils().loadCategories();
+            sender.sendMessage(ChatColor.GREEN + "Update complete.");
+            return true;
+        }
+
+        if (plugin.getCategoriesConfig().isInt("predefinedcategories." + args[1]) || plugin.getCategoriesConfig().isInt("customcategories." + args[1] + ".id")) {
+            sender.sendMessage(ChatColor.GREEN + "Updating all category: " + args[1] + "...");
+            try {
+                plugin.getHeadsUtils().loadCategory(args[1]);
+            } catch (NullPointerException ex) {
+                sender.sendMessage(ChatColor.RED + "Category is empty!");
+                return false;
+            }
+            sender.sendMessage(ChatColor.GREEN + "Update complete.");
+            return true;
+        }
+
+        sender.sendMessage(ChatColor.RED + "No category found with that name, possible categories: ");
+        sendPossibleCategoriesList(sender);
+        return false;
+    }
+
+    private boolean search(Player player, String[] args) {
+        if (args.length < 2) {
+            player.sendMessage(ChatColor.RED + "You need to specify a head! Use: /heads (search|searchfirst|searchatindex <index>) <head name>");
+            return false;
+        }
+
+        String[] searchArgs = new String[args.length - 1];
+        System.arraycopy(args, 1, searchArgs, 0, searchArgs.length);
+
+        player.sendMessage(ChatColor.GREEN + "Placing heads...");
+        try {
+            List<ItemStack> heads = HeadCreator.getItemStacks(plugin.getHeadsUtils().getHeads(String.join(" ", searchArgs)));
+            for (int i = 0; i < heads.size(); i++) {
+                ItemStack head = heads.get(i);
+                placeHeadAndGetInv(head, player, i);
+            }
+            player.sendMessage(ChatColor.GREEN + "Heads placed.");
+            return true;
+        } catch (NullPointerException ex) {
+            player.sendMessage(ChatColor.RED + "No heads found!");
+            return false;
+        }
+    }
+
+    private boolean searchFirst(Player player, String[] args) {
+        if (args.length < 2) {
+            player.sendMessage(ChatColor.RED + "You need to specify a head! Use: /heads (search|searchfirst|searchatindex <index>) <head name>");
+            return false;
+        }
+
+        String[] searchArgs = new String[args.length - 1];
+        System.arraycopy(args, 1, searchArgs, 0, searchArgs.length);
+
+        player.sendMessage(ChatColor.GREEN + "Placing head...");
+        try {
+            ItemStack head = HeadCreator.getItemStack(plugin.getHeadsUtils().getHead(String.join(" ", searchArgs)));
+            placeHeadAndGetInv(head, player, 0);
+            player.sendMessage(ChatColor.GREEN + "Head placed.");
+            return true;
+        } catch (NullPointerException ex) {
+            player.sendMessage(ChatColor.RED + "No heads found!");
+            return false;
+        }
+    }
+
+    private boolean searchAtIndex(Player player, String[] args) {
+        if (args.length < 2) {
+            player.sendMessage(ChatColor.RED + "You need to specify an index and a head! Use: /heads (search|searchfirst|searchatindex <index>) <head name>");
+            return false;
+        }
+        if (!HeadsPlacerCommand.isInteger(args[1])) {
+            player.sendMessage(ChatColor.RED + "You need to specify an index! Use: /heads (search|searchfirst|searchatindex <index>) <head name>");
+            return false;
+        }
+        if (args.length < 3) {
+            player.sendMessage(ChatColor.RED + "You need to specify a head! Use: /heads (search|searchfirst|searchatindex <index>) <head name>");
+            return false;
+        }
+
+        String[] searchArgs = new String[args.length - 2];
+        System.arraycopy(args, 2, searchArgs, 0, searchArgs.length);
+
+        player.sendMessage(ChatColor.GREEN + "Placing head...");
+        try {
+            ItemStack head = HeadCreator.getItemStack(plugin.getHeadsUtils().getHead(String.join(" ", searchArgs), Integer.parseInt(args[1])));
+            placeHeadAndGetInv(head, player, 0);
+            player.sendMessage(ChatColor.GREEN + "Head placed.");
+            return true;
+        } catch (NullPointerException ex) {
+            player.sendMessage(ChatColor.RED + "No heads found!");
+            return false;
+        }
+    }
+    
+    private boolean allCategoriesSearch(Player player){
+            player.sendMessage(ChatColor.GREEN + "Placing heads...");
+            List<ItemStack> heads = HeadCreator.getItemStacks(plugin.getHeadsUtils().getAllCategoryHeads());
+            for (int i = 0; i < heads.size(); i++) {
+                ItemStack head = heads.get(i);
+                placeHeadAndGetInv(head, player, i);
+            }
+            player.sendMessage(ChatColor.GREEN + "The heads have been placed and inventory has been filled");
+            return true;
+        
+    }
+    
+    private boolean categorySearch(Player player, String[] args){
+        // check if given category name exists
+        boolean flag = false;
+        for (HeadsCategory category : plugin.getHeadsUtils().getCategories().getList()) {
+            if (args[0].equalsIgnoreCase(category.getCategoryName())) {
+                flag = true;
+                break;
+            }
+        }
+        
+        if (!flag) {
+            player.sendMessage(ChatColor.RED + "No category found with that name, possible categories: ");
+            sendCategoriesList(player);
+            return false;
+        } else {
+            player.sendMessage(ChatColor.GREEN + "Placing heads...");
+            List<ItemStack> heads = HeadCreator.getItemStacks(plugin.getHeadsUtils().getCategoryHeads(args[0]));
+            for (int i = 0; i < heads.size(); i++) {
+                ItemStack head = heads.get(i);
+                placeHeadAndGetInv(head, player, i);
+            }
+            player.sendMessage(ChatColor.GREEN + "The heads have been placed and inventory has been filled");
+            return true;
+        }
+    }
+
+    private boolean onPlayerCommand(Player player, Command command, String commandLabel, String[] args) {
+
+        if (!player.hasPermission("heads.place")) {
+            return false;
+        }
+
+        // return the heads of all categories
+        if (args.length == 0) {
+            return allCategoriesSearch(player);
+        }
+
+        //return the category names
+        if (args[0].equalsIgnoreCase("categories")) {
+            sendCategoriesList(player);
+            return true;
+        }
+
+        //head search
+        if (args[0].equalsIgnoreCase("search") && player.hasPermission("heads.search")) {
+            return search(player, args);
+        }
+
+        //search only first head
+        if (args[0].equalsIgnoreCase("searchfirst") && player.hasPermission("heads.search")) {
+            return searchFirst(player, args);
+        }
+
+        //search at a specified index
+        if (args[0].equalsIgnoreCase("searchatindex") && player.hasPermission("heads.search")) {
+            return searchAtIndex(player, args);
+        }
+        
+        // return the heads of the specified category
+        return categorySearch(player, args);
+
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
+
+        // update heads
         if (args.length > 0 && args[0].equalsIgnoreCase("update") && sender.hasPermission("heads.update")) {
-            if (args.length < 2) {
-                sender.sendMessage(ChatColor.GREEN + "Updating all categories...");
-                plugin.getHeadsUtils().loadCategories();
-                sender.sendMessage(ChatColor.GREEN + "Update complete.");
-            } else if (plugin.getCategoriesConfig().isInt("predefinedcategories." + args[1]) || plugin.getCategoriesConfig().isInt("customcategories." + args[1] + ".id")) {
-                sender.sendMessage(ChatColor.GREEN + "Updating all category: " + args[1] + "...");
-                try {
-                    plugin.getHeadsUtils().loadCategory(args[1]);
-                } catch (NullPointerException ex) {
-                    sender.sendMessage(ChatColor.RED + "Category is empty!");
-                }
-                sender.sendMessage(ChatColor.GREEN + "Update complete.");
-            } else {
-                sender.sendMessage(ChatColor.RED + "No category found with that name, possible categories: ");
-                sendPossibleCategoriesList(sender);
-                return true;
-            }
-            return true;
+            return update(sender, args);
         }
 
+        // from here on only player commands
         if (!(sender instanceof Player)) {
             sender.sendMessage(ChatColor.RED + "Only players can perform this command");
-            return true;
+            return false;
         }
-
         Player player = (Player) sender;
-        if (player.hasPermission("heads.place")) {
-
-            if (args.length > 0 && args[0].equalsIgnoreCase("search") && sender.hasPermission("heads.search")) {
-                if (args.length < 2) {
-                    sender.sendMessage(ChatColor.RED + "You need to specify a head! Use: /(hds|chds|heads|head|cheads|chead|customheads) (search|searchfirst|searchatindex <index>) <head name>");
-                } else {
-                    String[] searchArgs = new String[args.length - 1];
-                    for (int i = 0; i < searchArgs.length; i++) {
-                        searchArgs[i] = args[i + 1];
-
-                    }
-                    sender.sendMessage(ChatColor.GREEN + "Placing heads...");
-                    try {
-                        List<ItemStack> heads = HeadCreator.getItemStacks(plugin.getHeadsUtils().getHeads(String.join(" ", searchArgs)));
-                        for (int i = 0; i < heads.size(); i++) {
-                            ItemStack head = heads.get(i);
-                            placeHeadAndGetInv(head, player, i);
-                        }
-                        sender.sendMessage(ChatColor.GREEN + "Heads placed.");
-                    } catch (NullPointerException | JSONException ex) {
-                        sender.sendMessage(ChatColor.RED + "No heads found!");
-                    }
-                }
-                return true;
-            }
-            if (args.length > 0 && args[0].equalsIgnoreCase("searchfirst") && sender.hasPermission("heads.search")) {
-                if (args.length < 2) {
-                    sender.sendMessage(ChatColor.RED + "You need to specify a head! Use: /(hds|chds|heads|head|cheads|chead|customheads) (search|searchfirst|searchatindex <index>) <head name>");
-                } else {
-                    String[] searchArgs = new String[args.length - 1];
-                    for (int i = 0; i < searchArgs.length; i++) {
-                        searchArgs[i] = args[i + 1];
-
-                    }
-                    sender.sendMessage(ChatColor.GREEN + "Placing head...");
-                    try {
-                        ItemStack head = HeadCreator.getItemStack(plugin.getHeadsUtils().getHead(String.join(" ", searchArgs)));
-                        placeHeadAndGetInv(head, player, 0);
-                        sender.sendMessage(ChatColor.GREEN + "Head placed.");
-                    } catch (NullPointerException | JSONException ex) {
-                        sender.sendMessage(ChatColor.RED + "No heads found!");
-                    }
-                }
-                return true;
-            }
-
-            if (args.length > 0 && args[0].equalsIgnoreCase("searchatindex") && sender.hasPermission("heads.search")) {
-                if (args.length < 2) {
-                    sender.sendMessage(ChatColor.RED + "You need to specify an index and a head! Use: /(hds|chds|heads|head|cheads|chead|customheads) (search|searchfirst|searchatindex <index>) <head name>");
-                } else if (HeadsPlacerCommand.isInteger(args[1])) {
-                    if (args.length < 3) {
-                        sender.sendMessage(ChatColor.RED + "You need to specify a head! Use: /(hds|chds|heads|head|cheads|chead|customheads) (search|searchfirst|searchatindex <index>) <head name>");
-                    } else {
-                        String[] searchArgs = new String[args.length - 2];
-                        for (int i = 0; i < searchArgs.length; i++) {
-                            searchArgs[i] = args[i + 2];
-
-                        }
-                        sender.sendMessage(ChatColor.GREEN + "Placing head...");
-                        try {
-                            ItemStack head = HeadCreator.getItemStack(plugin.getHeadsUtils().getHead(String.join(" ", searchArgs), Integer.parseInt(args[1])));
-                            placeHeadAndGetInv(head, player, 0);
-                            sender.sendMessage(ChatColor.GREEN + "Head placed.");
-                        } catch (NullPointerException | JSONException ex) {
-                            sender.sendMessage(ChatColor.RED + "No heads found!");
-                        }
-                    }
-                } else {
-                    sender.sendMessage(ChatColor.RED + "You need to specify an index! Use: /(hds|chds|heads|head|cheads|chead|customheads) (search|searchfirst|searchatindex <index>) <head name>");
-                }
-                return true;
-            } else {
-                sender.sendMessage(ChatColor.GREEN + "Placing heads and filling inventory...");
-                if (args.length == 0) {
-                    List<ItemStack> heads = HeadCreator.getItemStacks(plugin.getHeadsUtils().getAllCategoryHeads());
-                    for (int i = 0; i < heads.size(); i++) {
-                        ItemStack head = heads.get(i);
-                        placeHeadAndGetInv(head, player, i);
-                    }
-                    player.sendMessage(ChatColor.GREEN + "The heads have been placed and inventory has been filled");
-                    return true;
-                }
-
-                if (args.length > 0) {
-                    if (args[0].equalsIgnoreCase("categories")) {
-                        sendCategoriesList(sender);
-                        return true;
-                    } else {
-                        boolean flag = false;
-                        for (HeadsCategory category : plugin.getHeadsUtils().getCategories().getList()) {
-                            if (args[0].equalsIgnoreCase(category.getCategoryName())) {
-                                flag = true;
-                                break;
-                            }
-                        }
-                        if (flag) {
-                            List<ItemStack> heads = HeadCreator.getItemStacks(plugin.getHeadsUtils().getCategoryHeads(args[0]));
-                            for (int i = 0; i < heads.size(); i++) {
-                                ItemStack head = heads.get(i);
-                                placeHeadAndGetInv(head, player, i);
-                            }
-                            player.sendMessage(ChatColor.GREEN + "The heads have been placed and inventory has been filled");
-                            return true;
-                        }
-                    }
-                    sender.sendMessage(ChatColor.RED + "No category found with that name, possible categories: ");
-                    sendCategoriesList(sender);
-                    return true;
-                }
-            }
-        }
-        return false;
+        return onPlayerCommand(player, command, commandLabel, args);
     }
 
     private void sendCategoriesList(CommandSender sender) {

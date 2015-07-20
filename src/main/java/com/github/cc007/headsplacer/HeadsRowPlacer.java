@@ -36,7 +36,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 
 /**
  *
- * @author Rik Schaaf aka CC007 <http://coolcat007.nl/>
+ * @author Rik Schaaf aka CC007 (http://coolcat007.nl/)
  */
 public class HeadsRowPlacer extends HeadsPlugin {
 

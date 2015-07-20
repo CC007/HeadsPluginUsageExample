@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.cc007</groupId>
   <artifactId>HeadsPlacer</artifactId>
-  <version>0.0.1</version>
+  <version>1.8.7-1.0.0</version>
   <developers>
     <developer>
       <id>cc007</id>
@@ -14,6 +14,15 @@
         <role>developer</role>
       </roles>
       <timezone>Europe/Amsterdam</timezone>
+    </developer>
+    <developer>
+      <id>autom</id>
+      <name>Autom3</name>
+      <url>https://github.com/Autom3</url>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <timezone>Europe/Brussels</timezone>
     </developer>
   </developers>
   <licenses>
@@ -81,7 +90,6 @@
                   <exclude>org.bukkit:*</exclude>
                   <exclude>jline:jline</exclude>
                   <exclude>org.yaml:snakeyaml</exclude>
-                  <exclude>com.google.code.gson:gson</exclude>
                   <exclude>com.google.guava:guava</exclude>
                   <exclude>net.md-5:bungeecord-chat</exclude>
                   <exclude>junit:junit</exclude>
@@ -96,6 +104,21 @@
                   <exclude>net.milkbowl.vault:Vault</exclude>
                 </excludes>
               </artifactSet>
+              <filters>
+                <filter>
+                  <artifact>${project.groupId}:HeadsPlugin</artifact>
+                  <excludes>
+                    <exclude>com/github/cc007/headsutils/**</exclude>
+                  </excludes>
+                </filter>
+                <filter>
+                  <artifact>${project.groupId}:HeadsUtils</artifact>
+                  <excludes>
+                    <exclude>com/google/gson/**</exclude>
+                    <exclude>org/apache/commons/**</exclude>
+                  </excludes>
+                </filter>
+              </filters>
             </configuration>
           </execution>
         </executions>
@@ -104,20 +127,18 @@
   </build>
   <repositories>
     <repository>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots />
-      <id>RIK-DESKTOP-snapshots</id>
-      <url>http://localhost:8080/artifactory/libs-snapshot-local</url>
+      <id>cc007-lib-releases-repo</id>
+      <url>https://github.com/CC007/maven-repo/raw/master/lib-releases</url>
+    </repository>
+    <repository>
+      <id>cc007-private-ext-snapshot-repo</id>
+      <url>http://cc007.duckdns.org:8080/artifactory/ext-snapshot-local</url>
     </repository>
     <repository>
       <releases />
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <id>RIK-DESKTOP-releases</id>
-      <url>http://localhost:8080/artifactory/libs-release-local</url>
+      <snapshots />
+      <id>spigot-repo</id>
+      <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
     </repository>
     <repository>
       <id>vault-repo</id>
@@ -126,46 +147,18 @@
   </repositories>
   <dependencies>
     <dependency>
-      <groupId>org.spigotmc</groupId>
-      <artifactId>spigot</artifactId>
-      <version>1.8-R0.1-20150429.234816-2</version>
-      <scope>compile</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>gson</artifactId>
-          <groupId>com.google.code.gson</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>guava</artifactId>
-          <groupId>com.google.guava</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.8-R0.1-20150429.234927-1</version>
+      <version>1.8.7-R0.1-SNAPSHOT</version>
       <scope>compile</scope>
       <exclusions>
         <exclusion>
           <artifactId>guava</artifactId>
           <groupId>com.google.guava</groupId>
         </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.bukkit</groupId>
-      <artifactId>craftbukkit</artifactId>
-      <version>1.8-R0.1-20150429.234833-1</version>
-      <scope>compile</scope>
-      <exclusions>
         <exclusion>
           <artifactId>gson</artifactId>
           <groupId>com.google.code.gson</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>jopt-simple</artifactId>
-          <groupId>net.sf.jopt-simple</groupId>
         </exclusion>
       </exclusions>
     </dependency>

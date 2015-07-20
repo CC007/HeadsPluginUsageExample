@@ -24,8 +24,6 @@
 package com.github.cc007.headsplacer.commands;
 
 import com.github.cc007.headsplacer.HeadsRowPlacer;
-import com.github.cc007.headsutils.HeadsUtils;
-import com.github.cc007.headsutils.heads.Head;
 import com.github.cc007.headsutils.heads.HeadsCategory;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,6 +37,7 @@ import org.bukkit.util.StringUtil;
 /**
  *
  * @author Autom
+ * @author CC007 (http://coolcat007.nl/)
  */
 public class HeadsPlacerTabCompleter implements TabCompleter {
 

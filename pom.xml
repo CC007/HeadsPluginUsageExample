@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.cc007</groupId>
     <artifactId>HeadsPlacer</artifactId>
-    <version>0.0.1</version>
+    <version>1.8.7-1.0.0</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -30,30 +30,38 @@
             </roles>
             <timezone>Europe/Amsterdam</timezone>
         </developer>
+        <developer>
+            <id>autom</id>
+            <name>Autom3</name>
+            <url>https://github.com/Autom3</url>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>Europe/Brussels</timezone>
+        </developer>
     </developers>
     
     <repositories>
-        <!-- local libs repositories -->
         <repository>
-            <id>RIK-DESKTOP-snapshots</id>
-            <url>http://localhost:8080/artifactory/libs-snapshot-local</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
+            <id>cc007-lib-releases-repo</id>
+            <url>https://github.com/CC007/maven-repo/raw/master/lib-releases</url>
         </repository>
+        
         <repository>
-            <id>RIK-DESKTOP-releases</id>
-            <url>http://localhost:8080/artifactory/libs-release-local</url>
+            <id>cc007-private-ext-snapshot-repo</id>
+            <url>http://cc007.duckdns.org:8080/artifactory/ext-snapshot-local</url>
+        </repository>
+        
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
             <snapshots>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </snapshots>
-        </repository>     
+        </repository>       
 
         <!-- Vault repo -->
         <repository>
@@ -61,28 +69,31 @@
             <url>http://nexus.theyeticave.net/content/repositories/pub_releases/</url>
         </repository>   
     </repositories>
+    
     <dependencies>
-        <!-- Spigot API -->
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot</artifactId>
-            <version>1.8-R0.1-20150429.234816-2</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.code.gson</groupId>
-                    <artifactId>gson</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+        
         <!-- Bukkit API -->
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.8-R0.1-20150429.234927-1</version>
+            <version>1.8.7-R0.1-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.code.gson</groupId>
+                    <artifactId>gson</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        
+        <!-- HeadsPlugin API -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>HeadsPlugin</artifactId>
+            <version>1.8.7-1.0.4</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.guava</groupId>
@@ -90,27 +101,10 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- Craftbukkit API -->
-        <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>craftbukkit</artifactId>
-            <version>1.8-R0.1-20150429.234833-1</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.code.gson</groupId>
-                    <artifactId>gson</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>net.sf.jopt-simple</groupId>
-                    <artifactId>jopt-simple</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <!-- HeadsPlugin API -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>HeadsPlugin</artifactId>
-            <version>1.0.1</version>
+            <artifactId>HeadsUtils</artifactId>
+            <version>1.2.4</version>
         </dependency>
         
         <!-- Vault permission, chat and groups -->
@@ -184,7 +178,8 @@
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
-                        </goals><configuration>
+                        </goals>
+                        <configuration>
                             <minimizeJar>true</minimizeJar>
                             <artifactSet>
                                 <excludes>
@@ -192,7 +187,6 @@
                                     <exclude>org.bukkit:*</exclude>
                                     <exclude>jline:jline</exclude>
                                     <exclude>org.yaml:snakeyaml</exclude>
-                                    <exclude>com.google.code.gson:gson</exclude>
                                     <exclude>com.google.guava:guava</exclude>
                                     <exclude>net.md-5:bungeecord-chat</exclude>
                                     <exclude>junit:junit</exclude>
@@ -207,6 +201,21 @@
                                     <exclude>net.milkbowl.vault:Vault</exclude>
                                 </excludes>
                             </artifactSet>
+                            <filters>
+                                <filter>
+                                    <artifact>${project.groupId}:HeadsPlugin</artifact>
+                                    <excludes>
+                                        <exclude>com/github/cc007/headsutils/**</exclude>
+                                    </excludes>
+                                </filter>
+                                <filter>
+                                    <artifact>${project.groupId}:HeadsUtils</artifact>
+                                    <excludes>
+                                        <exclude>com/google/gson/**</exclude>
+                                        <exclude>org/apache/commons/**</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
                         </configuration>
                     </execution>
                 </executions>
