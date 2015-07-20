@@ -1,5 +1,5 @@
 name: HeadsPlacer
-version: 1.0.0
+version: 1.0.1
 main: com.github.cc007.headsplacer.HeadsRowPlacer
 author: Rik Schaaf aka CC007 (http://coolcat007.nl/)
 description: >

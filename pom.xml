@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.cc007</groupId>
     <artifactId>HeadsPlacer</artifactId>
-    <version>1.8.7-1.0.0</version>
+    <version>1.0.1</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -93,18 +93,13 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>HeadsPlugin</artifactId>
-            <version>1.8.7-1.0.4</version>
+            <version>1.0.5</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.guava</groupId>
                     <artifactId>guava</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>HeadsUtils</artifactId>
-            <version>1.2.4</version>
         </dependency>
         
         <!-- Vault permission, chat and groups -->
@@ -201,21 +196,6 @@
                                     <exclude>net.milkbowl.vault:Vault</exclude>
                                 </excludes>
                             </artifactSet>
-                            <filters>
-                                <filter>
-                                    <artifact>${project.groupId}:HeadsPlugin</artifact>
-                                    <excludes>
-                                        <exclude>com/github/cc007/headsutils/**</exclude>
-                                    </excludes>
-                                </filter>
-                                <filter>
-                                    <artifact>${project.groupId}:HeadsUtils</artifact>
-                                    <excludes>
-                                        <exclude>com/google/gson/**</exclude>
-                                        <exclude>org/apache/commons/**</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
                         </configuration>
                     </execution>
                 </executions>

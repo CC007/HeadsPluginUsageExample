@@ -26,10 +26,7 @@ package com.github.cc007.headsplacer;
 import com.github.cc007.headsplacer.commands.HeadsPlacerCommand;
 import com.github.cc007.headsplacer.commands.HeadsPlacerTabCompleter;
 import com.github.cc007.headsplugin.HeadsPlugin;
-import com.github.cc007.headsutils.HeadsUtils;
-import com.github.cc007.headsutils.heads.HeadsCategory;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -42,15 +39,9 @@ public class HeadsRowPlacer extends HeadsPlugin {
 
     private Plugin vault = null;
     private Permission permission = null;
-    private HeadsUtils headsUtils;
-    private Logger log;
 
     @Override
-    public void onEnable() {
-        /* Setup the utils */
-        log = getLogger();
-        headsUtils = HeadsUtils.getInstance(log);
-        headsUtils.loadCategories();
+    public void onEnableHeadsPlugin() {
         
         /* Setup plugin hooks */
         vault = getPlugin("Vault");
@@ -67,12 +58,7 @@ public class HeadsRowPlacer extends HeadsPlugin {
     }
 
     @Override
-    public void onDisable() {
-        for (HeadsCategory category : headsUtils.getCategories().getList()) {
-            category.clear();
-        }
-        headsUtils.getCategories().clear();
-        headsUtils = null;
+    public void onDisableHeadsPlugin() {
         vault = null;
         permission = null;
     }
@@ -114,14 +100,5 @@ public class HeadsRowPlacer extends HeadsPlugin {
      */
     public Permission getPermission() {
         return permission;
-    }
-
-    /**
-     * Get the HeadUtils instance
-     *
-     * @return the HeadUtils instance
-     */
-    public HeadsUtils getHeadsUtils() {
-        return headsUtils;
     }
 }

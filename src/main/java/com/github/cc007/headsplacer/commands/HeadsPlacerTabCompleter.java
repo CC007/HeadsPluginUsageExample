@@ -24,7 +24,7 @@
 package com.github.cc007.headsplacer.commands;
 
 import com.github.cc007.headsplacer.HeadsRowPlacer;
-import com.github.cc007.headsutils.heads.HeadsCategory;
+import com.github.cc007.headsplugin.utils.heads.HeadsCategory;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
