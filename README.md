@@ -1,5 +1,5 @@
 # HeadsPlugin usage example
-An example of how to use the HeadsPlugin project. 
+An example of how to use the HeadsPlugin project. (https://github.com/CC007/maven-repo/tree/master/lib-releases/com/github/cc007/HeadsPlugin/1.8.7-1.0.4)
 
 It demonstrates how to extend from the HeadsPlugin class and how to use the HeadsUtils, HeadsCreator and HeadsPlacer classes
 
